@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
+
+  <div class="container">
   <h1>Professional Virtual Piano</h1>
   <div class="controls">
     <select id="instrument">
@@ -18,13 +19,19 @@
     </select>
     <div class="button-group">
       <button id="birthdaySong" class="button">Play Birthday Song</button>
+      <button id="christmasSong" class="button christmas">Play Jingle Bells</button>
     </div>
   </div>
   <div class="piano"></div>
   <div id="visualizer">Ready to play</div>
   
-  <h2>How to Play "Happy Birthday"</h2>
-  <div class="guide">
+  <div class="tab-container">
+    <button class="tab active" onclick="openTab(event, 'birthdayGuide')">Birthday Song Guide</button>
+    <button class="tab" onclick="openTab(event, 'christmasGuide')">Jingle Bells Guide</button>
+  </div>
+
+  <div id="birthdayGuide" class="tab-content guide active">
+    <h2>How to Play "Happy Birthday"</h2>
     <ol>
       <li>Start with two C notes (press 'a' twice)</li>
       <li>Play D (press 's')</li>
@@ -43,7 +50,30 @@
       <li>Finish with A# (press 'u'), A (press 'h'), F (press 'f'), G (press 'g'), F (press 'f')</li>
     </ol>
   </div>
+
+  <div id="christmasGuide" class="tab-content guide">
+    <h2>How to Play "Jingle Bells"</h2>
+    <ol>
+      <li>Play E twice (press 'd' twice)</li>
+      <li>Play E again twice (press 'd' twice)</li>
+      <li>Play E once more (press 'd')</li>
+      <li>Play G (press 'g')</li>
+      <li>Play C (press 'a')</li>
+      <li>Play D (press 's')</li>
+      <li>Play E (press 'd')</li>
+      <li>Repeat steps 1-7 for the second part of the verse</li>
+      <li>For the chorus, play G three times (press 'g' three times)</li>
+      <li>Play G again (press 'g')</li>
+      <li>Play F# (press 't')</li>
+      <li>Play E (press 'd')</li>
+      <li>Play D (press 's')</li>
+      <li>Play A (press 'h')</li>
+      <li>Play G (press 'g')</li>
+      <li>Repeat steps 9-15 to complete the chorus</li>
+    </ol>
+  </div>
 </div>
+  
 <script src="script.js"></script>
 </body>
 </html>
