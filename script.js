@@ -2,6 +2,7 @@ const piano = document.querySelector('.piano');
 const visualizer = document.getElementById('visualizer');
 const instrumentSelect = document.getElementById('instrument');
 const birthdaySongBtn = document.getElementById('birthdaySong');
+const christmasSongBtn = document.getElementById('christmasSong');
 
 const notes = [
   { note: 'C', key: 'a', sound: 'C4' },
@@ -28,7 +29,7 @@ const instruments = {
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-function playSound(note) {
+function playSound(note, startTime = audioContext.currentTime) {
   const instrument = instruments[instrumentSelect.value];
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
@@ -39,13 +40,13 @@ function playSound(note) {
   oscillator.type = instrument.type;
 
   const baseFreq = 440 * Math.pow(2, (notes.findIndex(n => n.note === note) - 9) / 12);
-  oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+  oscillator.frequency.setValueAtTime(baseFreq, startTime);
 
-  gainNode.gain.setValueAtTime(instrument.volume, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + instrument.decay);
+  gainNode.gain.setValueAtTime(instrument.volume, startTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + instrument.decay);
 
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + instrument.decay);
+  oscillator.start(startTime);
+  oscillator.stop(startTime + instrument.decay);
 
   visualizer.classList.add('playing');
   visualizer.textContent = `Playing: ${note} (${instrumentSelect.value})`;
@@ -54,7 +55,7 @@ function playSound(note) {
     visualizer.classList.remove('playing');
   }, instrument.decay * 1000);
 
-  highlightKey(note);
+  highlightKey(note, startTime);
 }
 
 function createKey(noteData) {
@@ -78,29 +79,80 @@ function createKey(noteData) {
   return key;
 }
 
-function highlightKey(note) {
+function highlightKey(note, startTime) {
   const key = piano.querySelector(`.key:nth-child(${notes.findIndex(n => n.note === note) + 1})`);
-  key.classList.add('active');
-  setTimeout(() => key.classList.remove('active'), 200);
+  setTimeout(() => {
+    key.classList.add('active');
+    setTimeout(() => key.classList.remove('active'), 200);
+  }, (startTime - audioContext.currentTime) * 1000);
 }
 
 notes.forEach(note => piano.appendChild(createKey(note)));
 
-function playSequence(sequence) {
-  let index = 0;
-  const interval = setInterval(() => {
-    if (index < sequence.length) {
-      playSound(sequence[index]);
-      index++;
-    } else {
-      clearInterval(interval);
+function playSequenceWithDuration(sequence) {
+  let currentTime = audioContext.currentTime;
+  
+  sequence.forEach(({ note, duration }) => {
+    if (note) {
+      playSound(note, currentTime);
     }
-  }, 500);
+    currentTime += duration / 1000;
+  });
 }
 
 function playBirthdaySong() {
-  const sequence = ['C', 'C', 'D', 'C', 'F', 'E', 'C', 'C', 'D', 'C', 'G', 'F', 'C', 'C5', 'A', 'F', 'E', 'D', 'A#', 'A', 'F', 'G', 'F'];
-  playSequence(sequence);
+  const sequence = [
+    { note: 'C', duration: 500 }, { note: 'C', duration: 500 }, { note: 'D', duration: 500 }, { note: 'C', duration: 500 },
+    { note: 'F', duration: 500 }, { note: 'E', duration: 1000 },
+    { note: 'C', duration: 500 }, { note: 'C', duration: 500 }, { note: 'D', duration: 500 }, { note: 'C', duration: 500 },
+    { note: 'G', duration: 500 }, { note: 'F', duration: 1000 },
+    { note: 'C', duration: 500 }, {duration: 500 }, { note: 'C5', duration: 500 }, { note: 'A', duration: 500 }, { note: 'F', duration: 500 },
+    { note: 'E', duration: 500 }, { note: 'D', duration: 500 },
+    { note: 'A#', duration: 500 }, { note: 'A', duration: 500 }, { note: 'F', duration: 500 }, { note: 'G', duration: 500 }, { note: 'F', duration: 1000 }
+  ];
+  playSequenceWithDuration(sequence);
+}
+
+function playChristmasSong() {
+  const sequence = [
+    { note: 'E', duration: 250 }, { note: 'E', duration: 250 }, { note: 'E', duration: 500 },
+    { note: null, duration: 250 }, // Short pause
+    { note: 'E', duration: 250 }, { note: 'E', duration: 250 }, { note: 'E', duration: 500 },
+    { note: null, duration: 250 }, // Short pause
+    { note: 'E', duration: 250 }, { note: 'G', duration: 250 }, { note: 'C', duration: 250 }, { note: 'D', duration: 250 },
+    { note: 'E', duration: 1000 },
+    { note: null, duration: 500 }, // Longer pause
+    { note: 'F', duration: 250 }, { note: 'F', duration: 250 }, { note: 'F', duration: 250 }, { note: 'F', duration: 250 },
+    { note: 'F', duration: 250 }, { note: 'E', duration: 250 }, { note: 'E', duration: 250 }, { note: 'E', duration: 250 },
+    { note: 'E', duration: 250 }, { note: 'D', duration: 250 }, { note: 'D', duration: 250 }, { note: 'E', duration: 250 },
+    { note: 'D', duration: 500 }, { note: 'G', duration: 500 },
+    { note: null, duration: 500 }, // Longer pause
+    { note: 'G', duration: 250 }, { note: 'G', duration: 250 }, { note: 'G', duration: 500 },
+    { note: 'G', duration: 250 }, { note: 'F#', duration: 250 }, { note: 'E', duration: 500 },
+    { note: 'D', duration: 250 }, { note: 'A', duration: 250 }, { note: 'G', duration: 1000 },
+    { note: null, duration: 500 }, // Longer pause
+    { note: 'G', duration: 250 }, { note: 'G', duration: 250 }, { note: 'G', duration: 500 },
+    { note: 'G', duration: 250 }, { note: 'F#', duration: 250 }, { note: 'E', duration: 500 },
+    { note: 'D', duration: 250 }, { note: 'C', duration: 250 }, { note: 'C', duration: 1000 },
+  ];
+  
+  playSequenceWithDuration(sequence);
 }
 
 birthdaySongBtn.addEventListener('click', playBirthdaySong);
+christmasSongBtn.addEventListener('click', playChristmasSong);
+
+function openTab(evt, tabName) {
+  const tabContents = document.getElementsByClassName("tab-content");
+  for (let i = 0; i < tabContents.length; i++) {
+    tabContents[i].classList.remove("active");
+  }
+
+  const tabs = document.getElementsByClassName("tab");
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
