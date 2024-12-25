@@ -79,6 +79,14 @@ select:hover {
   transform: translateY(-2px);
 }
 
+.button.christmas {
+  background: #c0392b;
+}
+
+.button.christmas:hover {
+  background: #a93226;
+}
+
 .piano {
   display: flex;
   justify-content: center;
@@ -162,6 +170,32 @@ select:hover {
 
 .guide li {
   margin-bottom: 0.5rem;
+}
+
+.tab-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab.active {
+  background-color: #ddd;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
 }
 
 @media (max-width: 768px) {
